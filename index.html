@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R - T 1.0</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body>
+  <header class="header">
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
+    <div class="logo-wrap">
+      <img src="assets/Logo-RT.jpeg" alt="" class="logo-img" onerror="this.style.display='none'" />
+      <h1 class="logo">RADICAL<br><span>TRAINING</span></h1>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#inicio" class="nav-link active">Inicio</a>
+      <a href="#dashboard" class="nav-link">DahsBoard</a>
+      <a href="#usuarios" class="nav-link">Usuarios</a>
+      <a href="#agregar-usuario" class="nav-link">Nuevo usuario</a>
+      <a href="#registrar-pago" class="nav-link">Registrar pago</a>
+      <a href="#planes" class="nav-link">Planes</a>
+      <a href="#importar-usuarios" class="nav-link nav-link--hidden" aria-disabled="true"
+        title="Desactivado: migración finalizada">Importar usuarios</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <!-- Sección Inicio (Dashboard) -->
+    <section id="inicio" class="section active">
+      <h2>Inicio</h2>
+      <div class="cards">
+        <div class="card card--activos">
+          <span class="card-value" id="countActivos">-</span>
+          <span class="card-label">Membresías activas</span>
+        </div>
+        <div class="card card--vencidas">
+          <span class="card-value" id="countVencidas">-</span>
+          <span class="card-label">Membresías vencidas</span>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-header">
+          <h3>Próximos a vencer (7 días)</h3>
+          <div class="section-header__actions">
+            <button type="button" id="proximosFiltrosToggle" class="btn-filtros-usuarios"
+              aria-label="Abrir filtros de próximos a vencer" aria-expanded="false">
+              <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+            </button>
+            <div id="proximosFiltrosMenu" class="filtros-usuarios-menu" hidden>
+              <button type="button" class="filtros-usuarios-menu__item" data-sort-proximos="fecha_reciente">Fecha más
+                reciente</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-sort-proximos="fecha_antigua">Fecha más
+                vieja</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-sort-proximos="nombre_az">Nombre A -
+                Z</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-sort-proximos="nombre_za">Nombre Z -
+                A</button>
+              <div class="filtros-usuarios-menu__divider"></div>
+              <button type="button" class="filtros-usuarios-menu__item" data-size-proximos="4">Ver 4</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-size-proximos="5">Ver 5</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-size-proximos="10">Ver 10</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-size-proximos="15">Ver 15</button>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar toolbar--proximos">
+          <input type="search" id="buscarProximosInicio" class="input"
+            placeholder="Buscar próximos por nombre o teléfono..." />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" aria-describedby="caption-proximos">
+            <caption id="caption-proximos" class="visually-hidden">Socios con membresía por vencer en los próximos 7
+              días</caption>
+            <thead>
+              <tr>
+                <th scope="col">
+                  <button type="button" class="data-table__sort" data-sort-tabla="proximos" data-sort-col="nombre"
+                    title="Ordenar por nombre A-Z">
+                    Usuario <span class="data-table__sort-hint" aria-hidden="true"></span>
+                  </button>
+                </th>
+                <th scope="col">
+                  <button type="button" class="data-table__sort" data-sort-tabla="proximos" data-sort-col="fecha"
+                    title="Ordenar por fecha de vencimiento">
+                    Fecha de vencimiento <span class="data-table__sort-hint" aria-hidden="true"></span>
+                  </button>
+                </th>
+                <th scope="col" class="data-table__th-plain data-table__th-center">Contacto</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyProximosVencer"></tbody>
+          </table>
+        </div>
+        <div class="list-paginacion" id="paginacionProximos" hidden></div>
+      </div>
+      <div class="block">
+        <div class="block-header">
+          <h3>Usuarios vencidos</h3>
+          <div class="section-header__actions">
+            <button type="button" id="vencidosFiltrosToggle" class="btn-filtros-usuarios"
+              aria-label="Abrir filtros de usuarios vencidos" aria-expanded="false">
+              <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+            </button>
+            <div id="vencidosFiltrosMenu" class="filtros-usuarios-menu" hidden>
+              <button type="button" class="filtros-usuarios-menu__item" data-sort-vencidos="fecha_reciente">Fecha más
+                reciente</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-sort-vencidos="fecha_antigua">Fecha más
+                vieja</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-sort-vencidos="nombre_az">Nombre A -
+                Z</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-sort-vencidos="nombre_za">Nombre Z -
+                A</button>
+              <div class="filtros-usuarios-menu__divider"></div>
+              <button type="button" class="filtros-usuarios-menu__item" data-size-vencidos="5">Ver 5</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-size-vencidos="10">Ver 10</button>
+              <button type="button" class="filtros-usuarios-menu__item" data-size-vencidos="15">Ver 15</button>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar toolbar--vencidos">
+          <input type="search" id="buscarVencidosInicio" class="input"
+            placeholder="Buscar vencidos por nombre o teléfono..." />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" aria-describedby="caption-vencidos">
+            <caption id="caption-vencidos" class="visually-hidden">Socios con membresía vencida</caption>
+            <thead>
+              <tr>
+                <th scope="col">
+                  <button type="button" class="data-table__sort" data-sort-tabla="vencidos" data-sort-col="nombre"
+                    title="Ordenar por nombre A-Z">
+                    Usuario <span class="data-table__sort-hint" aria-hidden="true"></span>
+                  </button>
+                </th>
+                <th scope="col">
+                  <button type="button" class="data-table__sort" data-sort-tabla="vencidos" data-sort-col="fecha"
+                    title="Ordenar por fecha de vencimiento">
+                    Fecha de vencimiento <span class="data-table__sort-hint" aria-hidden="true"></span>
+                  </button>
+                </th>
+                <th scope="col" class="data-table__th-plain data-table__th-center">Contacto</th>
+                <th scope="col" class="data-table__th-plain data-table__th-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyVencidos"></tbody>
+          </table>
+        </div>
+        <div class="list-paginacion" id="paginacionVencidos" hidden></div>
+      </div>
+    </section>
+
+    <!-- Sección DahsBoard -->
+    <section id="dashboard" class="section">
+      <h2>DahsBoard</h2>
+      <div class="dashboard-kpis">
+        <div class="card">
+          <span class="card-value" id="kpiActivos">-</span>
+          <span class="card-label">Socios activos</span>
+        </div>
+        <div class="card">
+          <span class="card-value" id="kpiVencidos">-</span>
+          <span class="card-label">Socios vencidos</span>
+        </div>
+        <div class="card">
+          <span class="card-value" id="kpiIngresoMes">-</span>
+          <span class="card-label">Ingreso del mes</span>
+        </div>
+        <div class="card card--ticket-promedio" id="cardTicketPromedio">
+          <span class="card-value" id="kpiTicketPromedio">-</span>
+          <span class="card-label">
+            Promedio de ventas
+            <button type="button" id="btnInfoTicketPromedio" class="kpi-info-btn"
+              aria-label="¿Cómo se calcula el ticket promedio?" aria-expanded="false">
+              <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+              <span class="visually-hidden">Ayuda sobre ticket promedio</span>
+            </button>
+          </span>
+          <div id="infoTicketPromedio" class="kpi-info-popover" hidden>
+            Se calcula como: Ingreso del mes / cantidad de pagos del mes.
+          </div>
+        </div>
+      </div>
+
+      <div class="block dashboard-export">
+        <h3>Exportar a Excel</h3>
+        <p class="form-hint">Define el rango: los <strong>pagos</strong> se filtran por <strong>fecha de pago</strong>.
+          En socios se incluyen quienes tuvieron pago en el rango, registro o vencimiento de membresía en esas fechas.
+          El estado activo/vencido se calcula al día «Hasta».</p>
+        <div class="dashboard-export__fechas">
+          <div class="dashboard-rango-fechas__field">
+            <label class="label" for="exportDesde">Desde</label>
+            <input type="date" id="exportDesde" class="input" />
+          </div>
+          <div class="dashboard-rango-fechas__field">
+            <label class="label" for="exportHasta">Hasta</label>
+            <input type="date" id="exportHasta" class="input" />
+          </div>
+        </div>
+        <div class="dashboard-export-actions">
+          <button type="button" id="btnExportExcelTodo" class="btn btn--primary">Todo (un solo archivo)</button>
+          <button type="button" id="btnExportExcelActivos" class="btn btn--outline">Activos / vencidos</button>
+          <button type="button" id="btnExportExcelMetodos" class="btn btn--outline">Métodos de pago</button>
+          <button type="button" id="btnExportExcelIngresos" class="btn btn--outline">Ingresos</button>
+          <button type="button" id="btnExportExcelPlanes" class="btn btn--outline">Planes vendidos</button>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="block dashboard-chart-card">
+          <div class="dashboard-chart-header">
+            <h3 id="tituloChartEstado">Activos vs vencidos (último mes)</h3>
+            <select id="filtroEstadoPeriodo" class="input dashboard-filter-select" aria-label="Período de Activos vs vencidos">
+              <option value="1" selected>Último mes</option>
+              <option value="2">Últimos 2 meses</option>
+              <option value="3">Últimos 3 meses</option>
+              <option value="6">Últimos 6 meses</option>
+              <option value="12">Último año</option>
+              <option value="custom">Ranho de fechas…</option>
+            </select>
+            <div class="chart-export-menu">
+              <button type="button" class="chart-export-menu__toggle" id="btnToggleExportEstado"
+                aria-label="Opciones de descarga del gráfico Activos vs vencidos" aria-expanded="false">
+                <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+              </button>
+              <div class="chart-export-menu__content" id="menuExportEstado" hidden>
+                <button type="button" class="chart-export-menu__item" id="btnExportExcelActivosInline"
+                  title="Descargar Excel">
+                  <i class="fa-regular fa-file-excel" aria-hidden="true"></i>
+                  <span class="visually-hidden">Descargar Excel</span>
+                </button>
+                <button type="button" class="chart-export-menu__item" id="btnExportImagenEstadoInline"
+                  title="Descargar imagen PNG">
+                  <i class="fa-regular fa-image" aria-hidden="true"></i>
+                  <span class="visually-hidden">Descargar imagen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="estadoRangoPersonalizado" class="dashboard-rango-fechas" hidden>
+            <div class="dashboard-rango-fechas__row">
+              <div class="dashboard-rango-fechas__field">
+                <label class="label" for="estadoFechaDesde">Desde</label>
+                <input type="date" id="estadoFechaDesde" class="input" />
+              </div>
+              <div class="dashboard-rango-fechas__field">
+                <label class="label" for="estadoFechaHasta">Hasta</label>
+                <input type="date" id="estadoFechaHasta" class="input" />
+              </div>
+              <button type="button" id="btnAplicarRangoEstado" class="btn btn--secondary">Aplicar rango</button>
+            </div>
+            <p id="estadoRangoError" class="dashboard-rango-fechas__error" role="alert" hidden></p>
+          </div>
+          <div id="chartEstadoMembresias" class="chart-container"></div>
+        </div>
+        <div class="block dashboard-chart-card">
+          <div class="dashboard-chart-header">
+            <h3 id="tituloChartMetodos">Métodos de pago (último mes)</h3>
+            <select id="filtroMetodosPeriodo" class="input dashboard-filter-select" aria-label="Período de Métodos de pago">
+              <option value="1" selected>Último mes</option>
+              <option value="2">Últimos 2 meses</option>
+              <option value="3">Últimos 3 meses</option>
+              <option value="6">Últimos 6 meses</option>
+              <option value="12">Último año</option>
+              <option value="custom">Rango de fechas…</option>
+            </select>
+            <div class="chart-export-menu">
+              <button type="button" class="chart-export-menu__toggle" id="btnToggleExportMetodos"
+                aria-label="Opciones de descarga del gráfico Métodos de pago" aria-expanded="false">
+                <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+              </button>
+              <div class="chart-export-menu__content" id="menuExportMetodos" hidden>
+                <button type="button" class="chart-export-menu__item" id="btnExportExcelMetodosInline"
+                  title="Descargar Excel">
+                  <i class="fa-regular fa-file-excel" aria-hidden="true"></i>
+                  <span class="visually-hidden">Descargar Excel</span>
+                </button>
+                <button type="button" class="chart-export-menu__item" id="btnExportImagenMetodosInline"
+                  title="Descargar imagen PNG">
+                  <i class="fa-regular fa-image" aria-hidden="true"></i>
+                  <span class="visually-hidden">Descargar imagen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="metodosRangoPersonalizado" class="dashboard-rango-fechas" hidden>
+            <div class="dashboard-rango-fechas__row">
+              <div class="dashboard-rango-fechas__field">
+                <label class="label" for="metodosFechaDesde">Desde</label>
+                <input type="date" id="metodosFechaDesde" class="input" />
+              </div>
+              <div class="dashboard-rango-fechas__field">
+                <label class="label" for="metodosFechaHasta">Hasta</label>
+                <input type="date" id="metodosFechaHasta" class="input" />
+              </div>
+              <button type="button" id="btnAplicarRangoMetodos" class="btn btn--secondary">Aplicar rango</button>
+            </div>
+            <p id="metodosRangoError" class="dashboard-rango-fechas__error" role="alert" hidden></p>
+          </div>
+          <div id="chartMetodosPago" class="chart-container"></div>
+        </div>
+        <div class="block dashboard-chart-card dashboard-chart-card--full">
+          <div class="dashboard-chart-header">
+            <h3 id="tituloChartIngresos">Ingresos últimos 6 meses</h3>
+            <select id="filtroIngresosPeriodo" class="input dashboard-filter-select" aria-label="Período de Ingresos">
+              <option value="1" selected>Último mes</option>
+              <option value="2">Últimos 2 meses</option>
+              <option value="3">Últimos 3 meses</option>
+              <option value="6">Últimos 6 meses</option>
+              <option value="12">Último año</option>
+              <option value="24">Últimos 2 años</option>
+              <option value="all">Todo el histórico</option>
+              <option value="custom">Rango de fechas…</option>
+            </select>
+            <div class="chart-export-menu">
+              <button type="button" class="chart-export-menu__toggle" id="btnToggleExportIngresos"
+                aria-label="Opciones de descarga del gráfico Ingresos" aria-expanded="false">
+                <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+              </button>
+              <div class="chart-export-menu__content" id="menuExportIngresos" hidden>
+                <button type="button" class="chart-export-menu__item" id="btnExportExcelIngresosInline"
+                  title="Descargar Excel">
+                  <i class="fa-regular fa-file-excel" aria-hidden="true"></i>
+                  <span class="visually-hidden">Descargar Excel</span>
+                </button>
+                <button type="button" class="chart-export-menu__item" id="btnExportImagenIngresosInline"
+                  title="Descargar imagen PNG">
+                  <i class="fa-regular fa-image" aria-hidden="true"></i>
+                  <span class="visually-hidden">Descargar imagen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="ingresosRangoPersonalizado" class="dashboard-rango-fechas" hidden>
+            <p class="dashboard-rango-fechas__hint">Elige el intervalo (por ejemplo del 1 al 15 de abril). Se agrupa por
+              día, semana o mes según la cantidad de días.</p>
+            <div class="dashboard-rango-fechas__row">
+              <div class="dashboard-rango-fechas__field">
+                <label class="label" for="ingresoFechaDesde">Desde</label>
+                <input type="date" id="ingresoFechaDesde" class="input" />
+              </div>
+              <div class="dashboard-rango-fechas__field">
+                <label class="label" for="ingresoFechaHasta">Hasta</label>
+                <input type="date" id="ingresoFechaHasta" class="input" />
+              </div>
+              <button type="button" id="btnAplicarRangoIngresos" class="btn btn--secondary">Aplicar rango</button>
+            </div>
+            <p id="ingresosRangoError" class="dashboard-rango-fechas__error" role="alert" hidden></p>
+          </div>
+          <div id="chartIngresosMensuales" class="chart-container"></div>
+        </div>
+        <div class="block dashboard-chart-card dashboard-chart-card--full">
+          <div class="dashboard-chart-header">
+            <h3 id="tituloChartPlanesVendidos">Planes más vendidos (último mes)</h3>
+            <select id="filtroPlanesPeriodo" class="input dashboard-filter-select" aria-label="Período de Planes más vendidos">
+              <option value="1" selected>Último mes</option>
+              <option value="2">Últimos 2 meses</option>
+              <option value="3">Últimos 3 meses</option>
+              <option value="6">Últimos 6 meses</option>
+              <option value="12">Último año</option>
+              <option value="custom">Rango de fechas…</option>
+            </select>
+            <div class="chart-export-menu">
+              <button type="button" class="chart-export-menu__toggle" id="btnToggleExportPlanes"
+                aria-label="Opciones de descarga del gráfico Planes más vendidos" aria-expanded="false">
+                <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+              </button>
+              <div class="chart-export-menu__content" id="menuExportPlanes" hidden>
+                <button type="button" class="chart-export-menu__item" id="btnExportExcelPlanesInline"
+                  title="Descargar Excel">
+                  <i class="fa-regular fa-file-excel" aria-hidden="true"></i>
+                  <span class="visually-hidden">Descargar Excel</span>
+                </button>
+                <button type="button" class="chart-export-menu__item" id="btnExportImagenPlanesInline"
+                  title="Descargar imagen PNG">
+                  <i class="fa-regular fa-image" aria-hidden="true"></i>
+                  <span class="visually-hidden">Descargar imagen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="planesRangoPersonalizado" class="dashboard-rango-fechas" hidden>
+            <p class="dashboard-rango-fechas__hint">Selecciona el rango para calcular los planes más vendidos.</p>
+            <div class="dashboard-rango-fechas__row">
+              <div class="dashboard-rango-fechas__field">
+                <label class="label" for="planesFechaDesde">Desde</label>
+                <input type="date" id="planesFechaDesde" class="input" />
+              </div>
+              <div class="dashboard-rango-fechas__field">
+                <label class="label" for="planesFechaHasta">Hasta</label>
+                <input type="date" id="planesFechaHasta" class="input" />
+              </div>
+              <button type="button" id="btnAplicarRangoPlanes" class="btn btn--secondary">Aplicar rango</button>
+            </div>
+            <p id="planesRangoError" class="dashboard-rango-fechas__error" role="alert" hidden></p>
+          </div>
+          <div id="chartPlanesVendidos" class="chart-container"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Lista de usuarios -->
+    <section id="usuarios" class="section">
+      <div class="section-header section-header--usuarios">
+        <h2>Usuarios</h2>
+        <div class="section-header__actions">
+          <button type="button" id="usuariosFiltrosToggle" class="btn-filtros-usuarios"
+            aria-label="Abrir filtros de usuarios" aria-expanded="false">
+            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+          </button>
+          <div id="usuariosFiltrosMenu" class="filtros-usuarios-menu" hidden>
+            <button type="button" class="filtros-usuarios-menu__item" data-sort-usuarios="fecha_reciente">Fecha más
+              reciente</button>
+            <button type="button" class="filtros-usuarios-menu__item" data-sort-usuarios="fecha_antigua">Fecha más
+              vieja</button>
+            <button type="button" class="filtros-usuarios-menu__item" data-sort-usuarios="nombre_az">Nombre A -
+              Z</button>
+            <button type="button" class="filtros-usuarios-menu__item" data-sort-usuarios="nombre_za">Nombre Z -
+              A</button>
+            <div class="filtros-usuarios-menu__divider"></div>
+            <button type="button" class="filtros-usuarios-menu__item" data-size-usuarios="5">Ver 5</button>
+            <button type="button" class="filtros-usuarios-menu__item" data-size-usuarios="10">Ver 10</button>
+            <button type="button" class="filtros-usuarios-menu__item" data-size-usuarios="15">Ver 15</button>
+          </div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <input type="search" id="buscarUsuario" class="input" placeholder="Buscar por nombre, teléfono..." />
+      </div>
+      <ul class="list list--usuarios" id="listaUsuarios"></ul>
+      <div class="list-paginacion" id="paginacionUsuarios" hidden></div>
+    </section>
+
+    <!-- Sección Agregar usuario (incluye primer pago) -->
+    <section id="agregar-usuario" class="section">
+      <h2>Nuevo usuario</h2>
+      <p class="form-hint">Al guardar se registra el usuario y su primer pago.</p>
+      <div id="mensajeNuevoUsuario" class="mensaje-resultado" aria-live="polite"></div>
+      <form id="formUsuario" class="form form--two-cols">
+        <div class="form-field">
+          <label class="label" for="nombre">Nombre</label>
+          <input type="text" id="nombre" class="input" required />
+        </div>
+        <div class="form-field">
+          <label class="label" for="apellido">Apellido</label>
+          <input type="text" id="apellido" class="input" required />
+        </div>
+        <div class="form-field">
+          <label class="label" for="telefono">Teléfono</label>
+          <input type="tel" id="telefono" class="input" pattern="[0-9]*" inputmode="numeric" minlength="10"
+            maxlength="10" required />
+        </div>
+        <div class="form-field">
+          <label class="label" for="email">Email</label>
+          <input type="email" id="email" class="input" />
+        </div>
+        <div class="form-field">
+          <label class="label" for="nuevoUsuarioPlanId">Plan (primer pago)</label>
+          <select id="nuevoUsuarioPlanId" class="input" required>
+            <option value="">Seleccionar plan...</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="label" for="nuevoUsuarioMonto">Monto pagado</label>
+          <input type="number" id="nuevoUsuarioMonto" class="input" min="0" step="1" required />
+        </div>
+        <div class="form-field">
+          <label class="label" for="nuevoUsuarioMetodoPago">Método de pago</label>
+          <select id="nuevoUsuarioMetodoPago" class="input">
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Tarjeta">Tarjeta</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="label" for="nuevoUsuarioFechaPago">Fecha de pago</label>
+          <input type="date" id="nuevoUsuarioFechaPago" class="input" required />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary">Guardar usuario y registrar pago</button>
+          <button type="button" id="btnLimpiarNuevoUsuario" class="btn btn--secondary">Limpiar campos</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Sección Registrar pago -->
+    <section id="registrar-pago" class="section">
+      <h2>Registrar pago</h2>
+      <p class="form-hint">Escribe nombre o teléfono para buscar al cliente.</p>
+      <form id="formPago" class="form">
+        <label class="label">Usuario</label>
+        <div class="combobox-wrap">
+          <input type="text" id="pagoUsuarioBuscar" class="input combobox-input"
+            placeholder="Buscar por nombre o teléfono..." autocomplete="off" />
+          <input type="hidden" id="pagoUsuarioId" name="pagoUsuarioId" />
+          <div class="combobox-dropdown" id="comboboxDropdown" role="listbox" aria-hidden="true"></div>
+        </div>
+        <label class="label">Plan</label>
+        <select id="pagoPlanId" class="input" required>
+          <option value="">Seleccionar plan...</option>
+        </select>
+        <label class="label">Monto pagado</label>
+        <input type="number" id="montoPagado" class="input" min="0" step="1" required />
+        <label class="label">Método de pago</label>
+        <select id="metodoPago" class="input">
+          <option value="Efectivo">Efectivo</option>
+          <option value="Transferencia">Transferencia</option>
+          <option value="Tarjeta">Tarjeta</option>
+        </select>
+        <label class="label">Fecha de pago</label>
+        <input type="date" id="fechaPago" class="input" required />
+        <div class="form-actions form-actions--inline">
+          <button type="submit" class="btn btn--primary">Registrar pago</button>
+          <button type="button" id="btnLimpiarPago" class="btn btn--secondary">Limpiar</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Sección Importar usuarios (carga masiva) -->
+    <section id="importar-usuarios" class="section section--disabled">
+      <h2>Importar usuarios</h2>
+      <p class="form-hint">Sube un archivo CSV con tus clientes. Columnas: nombre, apellido, telefono, email (opcional),
+        fechaRegistro (dd/mm/aaaa), plan (ej. mensual_basic, bimestre_basic, trimestre_basic). Si indicas plan y fecha,
+        se guarda la membresía con esa fecha de inicio y vencimiento.</p>
+      <div class="import-block">
+        <a href="#" id="descargarPlantilla" class="btn btn--outline">Descargar plantilla CSV</a>
+        <label class="label" for="archivoCsv">Seleccionar archivo CSV</label>
+        <input type="file" id="archivoCsv" class="input" accept=".csv" />
+        <button type="button" id="btnImportar" class="btn btn--primary" disabled>Importar</button>
+        <p id="resultadoImportacion" class="import-result" aria-live="polite"></p>
+      </div>
+
+      <div class="block import-export-legacy-block">
+        <h3>Exportar datos antiguos a Excel (antes de borrar)</h3>
+        <p class="form-hint">Si aún tienes las colecciones del sistema anterior (<strong>clientes</strong> y/o
+          <strong>Clientes</strong>), puedes descargar todo en un solo archivo <strong>.xlsx</strong> (una hoja por
+          colección, columna <code>_idDocumento</code> = ID del documento en Firestore). Así conservas la información,
+          creas después <strong>planes</strong> / <strong>usuarios</strong> / <strong>pagos</strong> en limpio y más
+          adelante usas <strong>Migrar desde Excel</strong> con ese archivo (ajusta columnas si hace falta).
+        </p>
+        <p class="form-hint">Requiere que en <strong>Reglas</strong> exista <strong>solo lectura</strong> en esas rutas
+          (ya está en <code>firestore.rules</code> del repo; vuelve a ejecutar
+          <code>firebase deploy --only firestore:rules</code> si no lo has publicado).
+        </p>
+        <div class="import-block">
+          <button type="button" id="btnExportLegacyClientes" class="btn btn--outline">Descargar Excel (clientes +
+            Clientes)</button>
+          <p id="resultadoExportLegacy" class="import-result" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="block import-migracion-block">
+        <h3>Migrar desde Excel (app antiguo)</h3>
+        <p class="form-hint">Para clientes exportados desde el sistema anterior o desde el botón <strong>Exportar datos
+            antiguos</strong> (campos típicos: nombre, teléfono, fechas, tipoPlan y metodoPago numéricos, valorPago). Si
+          el Excel trae varias hojas (p. ej. <code>clientes</code> y <code>Clientes</code>), elige cuál importar. La
+          columna <code>_idDocumento</code> del export sirve como teléfono si la celda teléfono viene vacía. Se crea un
+          documento en <strong>usuarios</strong> y otro en <strong>pagos</strong> por fila.</p>
+        <p class="form-hint"><strong>metodoPago (número, app antiguo):</strong> 1 = Efectivo, 2 = Transferencia (si
+          aparece 3 se trata como Tarjeta). <strong>tipoPlan (número, select del app antiguo):</strong> 1 = Semanal, 2 =
+          Quincenal, 3 = Mensual, 4 = Bimestral, 5 = Trimestral. Cada valor se traduce al plan de Firestore con
+          <strong>duracionDias</strong> más cercana (7, 15, 30, 60, 90). Si las fechas de ingreso/vencimiento encajan
+          mucho mejor con otro plan, se corrige por fechas.
+        </p>
+        <div class="import-block">
+          <label class="label" for="archivoMigracionXlsx">Archivo .xlsx</label>
+          <input type="file" id="archivoMigracionXlsx" class="input" accept=".xlsx,.xls" />
+          <div id="migrarExcelSheetWrap" class="dashboard-rango-fechas__field" hidden>
+            <label class="label" for="migrarExcelSheet">Hoja a importar</label>
+            <select id="migrarExcelSheet" class="input"></select>
+          </div>
+          <label class="import-checkbox-label">
+            <input type="checkbox" id="migrarOmitirDuplicadosTelefono" checked />
+            Omitir filas cuyo teléfono ya exista en la base (recomendado si repites la importación)
+          </label>
+          <button type="button" id="btnMigrarRadical" class="btn btn--primary" disabled>Migrar a usuarios +
+            pagos</button>
+          <p id="resultadoMigracionRadical" class="import-result" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Planes -->
+    <section id="planes" class="section">
+      <div class="planes-admin-header">
+        <h2>Planes</h2>
+        <button type="button" id="btnToggleNuevoPlan" class="btn-planes-add" aria-label="Agregar nuevo plan"
+          aria-expanded="false" title="Agregar nuevo plan">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+        </button>
+      </div>
+      <p class="form-hint">Actualizar precio de cada membresía.</p>
+      <div id="mensajePlanesAdmin" class="mensaje-resultado" aria-live="polite"></div>
+      <div id="tarjetaNuevoPlan" class="planes-admin-card" hidden>
+        <form id="formNuevoPlan" class="form form--planes-admin">
+          <div class="form-field">
+            <label class="label" for="nuevoPlanNombre">Nombre del plan</label>
+            <input type="text" id="nuevoPlanNombre" class="input" placeholder="Ej: Semestral" required />
+          </div>
+          <div class="form-field">
+            <label class="label" for="nuevoPlanDuracionDias">Duración (días)</label>
+            <input type="number" id="nuevoPlanDuracionDias" class="input" min="1" step="1" placeholder="Ej: 180"
+              required />
+          </div>
+          <div class="form-field">
+            <label class="label" for="nuevoPlanPrecio">Precio</label>
+            <input type="number" id="nuevoPlanPrecio" class="input" min="0" step="1" placeholder="Ej: 320000"
+              required />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Agregar plan</button>
+          </div>
+        </form>
+      </div>
+      <ul class="list list--planes" id="listaPlanes"></ul>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

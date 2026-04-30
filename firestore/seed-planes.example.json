@@ -1,0 +1,29 @@
+{
+  "_instrucciones": "En Firebase Console → Firestore: crea la colección 'planes' y añade 3 documentos con el campo 'id' como ID de documento (no como campo interno). Los precios son ejemplo en COP; cámbialos a los reales de Radical Training.",
+  "planes": [
+    {
+      "id": "mensual_basic",
+      "nombre": "Mensual",
+      "precio": 100000,
+      "duracionDias": 30,
+      "activo": true,
+      "tipo": "mensual"
+    },
+    {
+      "id": "bimestre_basic",
+      "nombre": "Bimestre",
+      "precio": 180000,
+      "duracionDias": 60,
+      "activo": true,
+      "tipo": "bimestre"
+    },
+    {
+      "id": "trimestre_basic",
+      "nombre": "Trimestre",
+      "precio": 250000,
+      "duracionDias": 90,
+      "activo": true,
+      "tipo": "trimestre"
+    }
+  ]
+}

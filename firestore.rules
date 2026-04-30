@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Solo estas colecciones usa la app web (ajusta write en producción) ---
+    match /planes/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /usuarios/{docId} {
+      allow read, write: if true;
+    }
+
+    match /pagos/{docId} {
+      allow read, write: if true;
+    }
+
+    // --- Solo lectura: app antiguo (exportar a Excel antes de borrar; quita esto cuando ya no existan) ---
+    match /clientes/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /Clientes/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
