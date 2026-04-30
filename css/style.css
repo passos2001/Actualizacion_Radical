@@ -357,6 +357,25 @@ body {
   max-width: 520px;
 }
 
+.dashboard-export__fechas .dashboard-rango-fechas__field {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.dashboard-export__fechas .input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.dashboard-export__fechas input[type="date"] {
+  display: block;
+  padding-right: 2.6rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 .dashboard-export-actions {
   display: flex;
   flex-wrap: wrap;
@@ -831,6 +850,26 @@ body {
   border-radius: var(--radius);
 }
 
+/* iOS/Safari: evita desbordes en inputs de fecha dentro de formularios */
+.form input[type="date"].input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-right: 2.6rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+#formPago #fechaPago.input,
+#formUsuario #nuevoUsuarioFechaPago.input,
+.dashboard-export input[type="date"].input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 .input:focus {
   outline: none;
   border-color: var(--accent);
@@ -1248,6 +1287,10 @@ select.input {
     grid-template-columns: 1fr;
     gap: 0.6rem;
     max-width: none;
+  }
+
+  .dashboard-export {
+    overflow: hidden;
   }
 
   .dashboard-rango-fechas__field {
